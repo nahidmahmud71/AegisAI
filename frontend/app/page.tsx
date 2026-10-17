@@ -92,7 +92,9 @@ interface AuditLogEntry {
   srcBytes: number;
 }
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL || "[http://127.0.0.1:8000](http://127.0.0.1:8000)"
+).replace(/\/$/, "");
 
 const DEFAULT_OVERVIEW: SystemOverview = {
   metrics: {
@@ -393,7 +395,7 @@ function buildLocalFallbackAnalysis(
 
 export default function AegisAIDashboard() {
   const [overview, setOverview] = useState<SystemOverview>(DEFAULT_OVERVIEW);
-  const [features, setFeatures] = useState<Record<string, string | number>>(
+  const [features, setFeatures] = useState<Record<string, number string |>>(
     DEFAULT_OVERVIEW.sample_presets["DoS / DDoS"]
   );
   const [activePreset, setActivePreset] = useState<string>("DoS / DDoS");
@@ -411,10 +413,10 @@ export default function AegisAIDashboard() {
   const [logFilter, setLogFilter] = useState<string>("ALL");
 
   const [noiseLevel, setNoiseLevel] = useState<number>(0.15);
-  const [advResult, setAdvResult] = useState<AdversarialResult | null>(null);
+  const [advResult, setAdvResult] = useState<AdversarialResult null |>(null);
   const [advLoading, setAdvLoading] = useState<boolean>(false);
 
-  const [batchResult, setBatchResult] = useState<BatchScanResponse | null>(null);
+  const [batchResult, setBatchResult] = useState<BatchScanResponse null |>(null);
   const [batchLoading, setBatchLoading] = useState<boolean>(false);
   const [batchSourceLabel, setBatchSourceLabel] = useState<string>(
     "Live OS Socket Telemetry"
@@ -872,7 +874,6 @@ export default function AegisAIDashboard() {
       {/* Left Enterprise Sidebar */}
       <aside className="w-64 border-r border-zinc-800/80 bg-[#0c0c0e] flex flex-col justify-between shrink-0">
         <div>
-          {/* Brand Header */}
           <div className="h-14 px-5 border-b border-zinc-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="h-7 w-7 rounded-md bg-zinc-100 text-zinc-950 flex items-center justify-center">
@@ -895,7 +896,6 @@ export default function AegisAIDashboard() {
             />
           </div>
 
-          {/* Navigation Links */}
           <div className="p-3 space-y-1">
             <p className="px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
               Operations Workspace
@@ -934,7 +934,6 @@ export default function AegisAIDashboard() {
             })}
           </div>
 
-          {/* Quick Actions in Sidebar */}
           <div className="p-3 border-t border-zinc-800/80 space-y-2">
             <p className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
               Live Telemetry Actions
@@ -969,7 +968,6 @@ export default function AegisAIDashboard() {
           </div>
         </div>
 
-        {/* Engine Footer Status */}
         <div className="p-4 border-t border-zinc-800/80 bg-[#09090b]/60">
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-zinc-400 font-medium">Neural Backend</span>
@@ -977,7 +975,7 @@ export default function AegisAIDashboard() {
               onClick={() => checkBackendConnection(activePreset)}
               className="text-[10px] font-mono text-zinc-300 hover:text-white underline cursor-pointer"
             >
-              {backendOnline ? "Port 8000 Online" : "Sync Port 8000"}
+              {backendOnline ? "Backend Online" : "Sync Backend"}
             </button>
           </div>
           <p className="text-[11px] font-mono text-zinc-500">
@@ -988,7 +986,6 @@ export default function AegisAIDashboard() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Compact Top Status Header */}
         <header className="h-14 border-b border-zinc-800/80 bg-[#0c0c0e]/90 backdrop-blur px-6 flex items-center justify-between gap-4 sticky top-0 z-20">
           <div className="flex items-center gap-3">
             <span
@@ -1037,9 +1034,7 @@ export default function AegisAIDashboard() {
           </div>
         </header>
 
-        {/* Main Workspace Container */}
         <main className="p-6 space-y-6 max-w-[1400px]">
-          {/* Compact Segmented Traffic Signature Selector */}
           <section className="p-4 rounded-xl bg-[#121215] border border-zinc-800/90 flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400">
@@ -1086,12 +1081,8 @@ export default function AegisAIDashboard() {
             </div>
           </section>
 
-          {/* =========================================================
-              VIEW 1: SOC MONITOR
-             ========================================================= */}
           {activeNav === "soc" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Left 5 Columns: Verdict, Playbook & Rules */}
               <div className="lg:col-span-5 space-y-6">
                 <div className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-4">
                   <div className="flex items-center justify-between">
@@ -1132,7 +1123,6 @@ export default function AegisAIDashboard() {
                     </div>
                   </div>
 
-                  {/* Risk Bar */}
                   <div className="pt-2">
                     <div className="flex justify-between text-[11px] font-mono text-zinc-400 mb-1.5">
                       <span>THREAT RISK SCORE</span>
@@ -1154,7 +1144,6 @@ export default function AegisAIDashboard() {
                     {result.summary}
                   </p>
 
-                  {/* Automated Mitigation Rules */}
                   <div className="pt-3 border-t border-zinc-800/80 space-y-3">
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
@@ -1191,7 +1180,6 @@ export default function AegisAIDashboard() {
                     </div>
                   </div>
 
-                  {/* Recommended SOC Actions */}
                   <div className="pt-3 border-t border-zinc-800/80">
                     <p className="text-[11px] font-mono uppercase text-zinc-400 mb-2">
                       Incident Response Playbook
@@ -1210,7 +1198,6 @@ export default function AegisAIDashboard() {
                   </div>
                 </div>
 
-                {/* Triple-Model Ensemble Consensus */}
                 <div className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-3.5">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">
@@ -1258,7 +1245,6 @@ export default function AegisAIDashboard() {
                 </div>
               </div>
 
-              {/* Right 7 Columns: TreeSHAP Attribution + Probabilities + SIEM Log */}
               <div className="lg:col-span-7 space-y-6">
                 <div className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90">
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -1338,7 +1324,6 @@ export default function AegisAIDashboard() {
                   </div>
                 </div>
 
-                {/* Class Probabilities & SIEM Log */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90">
                     <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-4">
@@ -1430,9 +1415,6 @@ export default function AegisAIDashboard() {
             </div>
           )}
 
-          {/* =========================================================
-              VIEW 2: EXPLAINABILITY & ADVERSARIAL STRESS LAB
-             ========================================================= */}
           {activeNav === "xai" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-6 p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-5">
@@ -1602,9 +1584,6 @@ export default function AegisAIDashboard() {
             </div>
           )}
 
-          {/* =========================================================
-              VIEW 3: LIVE PC SOCKET & BATCH CSV SCANNER
-             ========================================================= */}
           {activeNav === "batch" && (
             <section className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -1731,9 +1710,6 @@ export default function AegisAIDashboard() {
             </section>
           )}
 
-          {/* =========================================================
-              VIEW 4: PACKET TELEMETRY INSPECTOR (15 FEATURES)
-             ========================================================= */}
           {activeNav === "inspector" && (
             <section className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -1805,9 +1781,6 @@ export default function AegisAIDashboard() {
             </section>
           )}
 
-          {/* =========================================================
-              VIEW 5: MODEL BENCHMARKS & ARCHITECTURE
-             ========================================================= */}
           {activeNav === "benchmarks" && (
             <section className="p-5 rounded-xl bg-[#121215] border border-zinc-800/90 space-y-5">
               <div>
